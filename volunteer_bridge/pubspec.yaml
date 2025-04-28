@@ -30,7 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  image_picker: ^1.0.4
+  flutter_riverpod: ^2.4.9  # Latest stable version
+  riverpod: ^2.4.9          # Core package
+  hooks_riverpod: ^2.4.9
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -41,7 +44,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -67,6 +70,8 @@ flutter:
       - assets/Organizer_landing.svg
       - assets/Volunteer_landing.svg
       - assets/ImageFrame.png
+      - assets/balloon.jpg
+      - assets/placeholder.jpg
       
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
