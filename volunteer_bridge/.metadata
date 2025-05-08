@@ -16,8 +16,13 @@ migration:
       create_revision: ea121f8859e4b13e47a8f845e4586164519588bc
       base_revision: ea121f8859e4b13e47a8f845e4586164519588bc
     - platform: android
+<<<<<<< HEAD
       create_revision: ea121f8859e4b13e47a8f845e4586164519588bc
       base_revision: ea121f8859e4b13e47a8f845e4586164519588bc
+=======
+      create_revision: 2663184aa79047d0a33a14a3b607954f8fdd8730
+      base_revision: 2663184aa79047d0a33a14a3b607954f8fdd8730
+>>>>>>> Ev2
 
   # User provided section
 

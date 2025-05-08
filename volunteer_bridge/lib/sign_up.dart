@@ -38,7 +38,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
             children: [
               // Centering the title properly
               const SizedBox(
-                height: 100.0,
+                height: 50.0,
               ),
               Center(
                 child: Row(
@@ -61,93 +61,295 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
               const SizedBox(height: 24.0),
 
               // First Name Input
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'What is your first name?',
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                onChanged: (value) => volunteerSignUp.updateFirstName(value),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'What is your first name?',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                  onChanged: (value) => volunteerSignUp.updateFirstName(value),
+                ),
               ),
+
               const SizedBox(height: 16.0),
 
               // Last Name Input
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'What is your last name?',
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                onChanged: (value) => volunteerSignUp.updateLastName(value),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'What is your last name?',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                  onChanged: (value) => volunteerSignUp.updateLastName(value),
+                ),
               ),
+
               const SizedBox(height: 16.0),
 
               // Date of Birth Input
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'What is your date of birth?',
-                  suffixIcon: Icon(Icons.calendar_today),
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                controller: dateController,
-                readOnly: true,
-                onTap: () async {
-                  final DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime.now(),
-                    builder: (context, child) {
-                      return Theme(data: Theme.of(context), child: child!);
-                    },
-                  );
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'What is your date of birth?',
+                    suffixIcon: const Icon(Icons.calendar_today),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                  controller: dateController,
+                  readOnly: true,
+                  onTap: () async {
+                    final DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime.now(),
+                      builder: (context, child) {
+                        return Theme(data: Theme.of(context), child: child!);
+                      },
+                    );
 
-                  if (pickedDate != null) {
-                    dateController.text =
-                        "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+                    if (pickedDate != null) {
+                      dateController.text =
+                          "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
 
-                    volunteerSignUp.updateBirthDate(pickedDate);
-                  }
-                },
+                      volunteerSignUp.updateBirthDate(pickedDate);
+                    }
+                  },
+                ),
               ),
               const SizedBox(height: 16.0),
-
               // Phone Number Input
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Phone Number',
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                onChanged: (value) => volunteerSignUp.updateContactNum(value),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'What is your phone number?',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                  onChanged: (value) => volunteerSignUp.updateContactNum(value),
+                ),
               ),
               const SizedBox(height: 16.0),
 
               // Gender Dropdown
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Select your gender',
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                items: <String>['Male', 'Female', 'Others'].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {},
+                child: DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Select your gender',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // No visible border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                  items:
+                      <String>['Male', 'Female', 'Others'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {},
+                ),
               ),
+
               const SizedBox(height: 16.0),
 
               // Email Input
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'What is your email?',
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                onChanged: (value) => volunteerSignUp.updateEmail(value),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'What is your email?',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+
+              // Address Input
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Where do you live?',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                  onChanged: (value) => volunteerSignUp.updateEmail(value),
+                ),
               ),
               const SizedBox(height: 32.0),
 
@@ -185,7 +387,11 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     onPressed: () {
                       Navigator.of(context).popUntil((route) => route.isFirst);
                     },
-                    child: const Text('Login', style: TextStyle(fontSize: 20)),
+                    child: const Text(
+                      'Login',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
