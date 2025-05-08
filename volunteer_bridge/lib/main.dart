@@ -1,12 +1,20 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:volunteer_bridge/Auth/authenticate.dart';
 import 'package:volunteer_bridge/notifications.dart';
 import 'package:volunteer_bridge/home.dart';
 import 'package:volunteer_bridge/profile.dart';
 import 'package:volunteer_bridge/activities.dart';
+import 'firebase_options.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +28,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: const Color.fromRGBO(155, 93, 229, 1),
       ),
-      home: const MainPage(),
+      home: const Wrapper3(),
     );
   }
 }
@@ -54,41 +62,27 @@ class _MainPageState extends State<MainPage> {
           ],
         ),
       ),
-
       body: Center(
         child: pageList[myIndex],
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index) {
           setState(() {
             myIndex = index;
           });
         },
-
         currentIndex: myIndex,
         selectedItemColor: const Color.fromRGBO(155, 93, 229, 1),
         unselectedItemColor: Colors.grey,
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home), 
-            label: 'Home'
-          ),
+              icon: Icon(Icons.notifications), label: 'Notifications'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications), 
-            label: 'Notifications'
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today), 
-            label: 'Activities'
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person), 
-            label: 'Profile'
-          ),
+              icon: Icon(Icons.calendar_today), label: 'Activities'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );
   }
 }
-

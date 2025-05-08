@@ -1,20 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:volunteer_bridge/password_input.dart';
+import 'package:volunteer_bridge/riverpod/volunteer_provider.dart';
 
 void main() {
-  runApp(const SignUpPage());
+  runApp(const ProviderScope(child: SignUpPage()));
 }
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
 
   @override
+  ConsumerState<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends ConsumerState<SignUpPage> {
+  @override
   Widget build(BuildContext context) {
+    final volunteerSignUp = ref.read(volunteerSignUpProvider.notifier);
+    final TextEditingController dateController = TextEditingController();
+
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.arrow_back)),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Centering the title properly
@@ -42,43 +61,65 @@ class SignUpPage extends StatelessWidget {
               const SizedBox(height: 24.0),
 
               // First Name Input
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                decoration: const InputDecoration(
                   labelText: 'What is your first name?',
                   filled: true,
                   fillColor: Color.fromARGB(255, 239, 236, 239),
                 ),
+                onChanged: (value) => volunteerSignUp.updateFirstName(value),
               ),
               const SizedBox(height: 16.0),
 
               // Last Name Input
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                decoration: const InputDecoration(
                   labelText: 'What is your last name?',
                   filled: true,
                   fillColor: Color.fromARGB(255, 239, 236, 239),
                 ),
+                onChanged: (value) => volunteerSignUp.updateLastName(value),
               ),
               const SizedBox(height: 16.0),
 
               // Date of Birth Input
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                decoration: const InputDecoration(
                   labelText: 'What is your date of birth?',
                   suffixIcon: Icon(Icons.calendar_today),
                   filled: true,
                   fillColor: Color.fromARGB(255, 239, 236, 239),
                 ),
+                controller: dateController,
+                readOnly: true,
+                onTap: () async {
+                  final DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime.now(),
+                    builder: (context, child) {
+                      return Theme(data: Theme.of(context), child: child!);
+                    },
+                  );
+
+                  if (pickedDate != null) {
+                    dateController.text =
+                        "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+
+                    volunteerSignUp.updateBirthDate(pickedDate);
+                  }
+                },
               ),
               const SizedBox(height: 16.0),
 
               // Phone Number Input
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                decoration: const InputDecoration(
                   labelText: 'Phone Number',
                   filled: true,
                   fillColor: Color.fromARGB(255, 239, 236, 239),
                 ),
+                onChanged: (value) => volunteerSignUp.updateContactNum(value),
               ),
               const SizedBox(height: 16.0),
 
@@ -100,12 +141,13 @@ class SignUpPage extends StatelessWidget {
               const SizedBox(height: 16.0),
 
               // Email Input
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                decoration: const InputDecoration(
                   labelText: 'What is your email?',
                   filled: true,
                   fillColor: Color.fromARGB(255, 239, 236, 239),
                 ),
+                onChanged: (value) => volunteerSignUp.updateEmail(value),
               ),
               const SizedBox(height: 32.0),
 
@@ -114,7 +156,10 @@ class SignUpPage extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle continue action
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const PasswordInput()));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 155, 93, 229),
@@ -138,7 +183,7 @@ class SignUpPage extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      // Handle login action
+                      Navigator.of(context).popUntil((route) => route.isFirst);
                     },
                     child: const Text('Login', style: TextStyle(fontSize: 20)),
                   ),

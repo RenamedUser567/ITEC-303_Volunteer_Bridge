@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:volunteer_bridge/Services/auth.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -7,7 +7,6 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -46,7 +45,9 @@ class ProfilePage extends StatelessWidget {
                     title: const Text('Log out'),
                     subtitle:
                         const Text('Further secure your account for safety'),
-                    onTap: () {},
+                    onTap: () {
+                      AuthService2().signOut();
+                    },
                   ),
                 ],
               ),
@@ -77,7 +78,6 @@ class ProfilePage extends StatelessWidget {
           ],
         ),
       ),
-      
     );
   }
 }

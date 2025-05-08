@@ -13,7 +13,6 @@ class HomePage extends StatelessWidget {
             padding: EdgeInsets.all(16.0),
             child: SearchBar(),
           ),
-
           const Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 16),
@@ -25,38 +24,35 @@ class HomePage extends StatelessWidget {
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
-
                   EventCard(
                     imageUrl: 'assets/ImageFrame.png',
                     title: 'Donation Drive',
                     location: 'Quezon City, Manila',
                     time: '10 AM, April 5',
-                    description: 'Come together with us to spread kindness and compassion through Hearts United...',
+                    description:
+                        'Come together with us to spread kindness and compassion through Hearts United...',
                     tags: ['Donations', 'Non-Profit', 'Community Service'],
                   ),
-                  
                   EventCard(
                     imageUrl: 'assets/ImageFrame.png',
                     title: 'Tree Planting',
                     location: 'Laguna, Philippines',
                     time: '8 AM, April 12',
-                    description: 'Join us in restoring nature by planting trees in local parks...',
+                    description:
+                        'Join us in restoring nature by planting trees in local parks...',
                     tags: ['Environment', 'Sustainability', 'Volunteer'],
                   ),
-                  
                   SizedBox(height: 20),
                 ],
               ),
             ),
           ),
-
-         
           Container(
             padding: const EdgeInsets.all(12),
             color: Colors.white,
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children:  [
+              children: [
                 CategoryButton(label: 'Tree Planting'),
                 CategoryButton(label: 'Blood Drive'),
                 CategoryButton(label: 'Cleanup'),
@@ -117,14 +113,12 @@ class EventCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          
           Expanded(
             flex: 1,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.asset(
                 imageUrl,
-               
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
                   width: 120,
@@ -136,24 +130,21 @@ class EventCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-
-          
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                
                 Row(
                   children: [
                     Expanded(
                       child: Text(
                         title,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
@@ -162,14 +153,14 @@ class EventCard extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
                         minimumSize: Size.zero,
                       ),
                       child: const Text('Join', style: TextStyle(fontSize: 12)),
                     ),
                   ],
                 ),
-               
                 Row(
                   children: [
                     const Icon(Icons.location_on, size: 14, color: Colors.grey),
@@ -182,36 +173,34 @@ class EventCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     const Icon(Icons.access_time, size: 14, color: Colors.grey),
-                    Text(time, style: const TextStyle(fontSize: 8, color: Colors.grey)),
+                    Text(time,
+                        style:
+                            const TextStyle(fontSize: 8, color: Colors.grey)),
                   ],
                 ),
-
                 const SizedBox(height: 8),
-
-                
                 Text(
                   description,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 12),
                 ),
-
                 const SizedBox(height: 8),
-
-               
                 Wrap(
                   spacing: 4,
                   runSpacing: 4,
                   children: tags
                       .map((tag) => Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: Colors.purple[100],
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
                               tag,
-                              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  fontSize: 10, fontWeight: FontWeight.bold),
                             ),
                           ))
                       .toList(),
@@ -239,7 +228,8 @@ class CategoryButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       ),
-      child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 12)),
+      child: Text(label,
+          style: const TextStyle(color: Colors.white, fontSize: 12)),
     );
   }
 }
