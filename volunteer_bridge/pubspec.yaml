@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  url_launcher: ^6.1.7
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -37,6 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.17
   google_fonts: ^6.2.1
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -64,9 +66,10 @@ flutter:
   assets:
       - assets/Handshake.svg
       - assets/ksi.jpg
-      - assets/Organizer_landing.svg
-      - assets/Volunteer_landing.svg
+      - assets/New_Organizer.svg
+      - assets/New_Volunteer.svg
       - assets/ImageFrame.png
+      - assets/mercedes-benz.jpg
       
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

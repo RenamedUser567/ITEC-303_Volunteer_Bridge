@@ -45,8 +45,8 @@ class LandingPage extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  SvgPicture.asset('assets/Organizer_landing.svg',
-                      height: 100, width: 100),
+                  SvgPicture.asset('assets/New_Organizer.svg',
+                      height: 125, width: 125),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {},
@@ -64,8 +64,8 @@ class LandingPage extends StatelessWidget {
               const SizedBox(width: 30),
               Column(
                 children: [
-                  SvgPicture.asset('assets/Volunteer_landing.svg',
-                      height: 100, width: 100),
+                  SvgPicture.asset('assets/New_Volunteer.svg',
+                      height: 125, width: 125),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {},
@@ -97,6 +97,7 @@ class LandingPage extends StatelessWidget {
                 fontSize: 20,
                 color: Color.fromARGB(255, 155, 93, 229),
                 decoration: TextDecoration.underline,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),

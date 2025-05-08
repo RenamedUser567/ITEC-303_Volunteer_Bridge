@@ -12,6 +12,11 @@ class SignUpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color.fromRGBO(155, 93, 229, 1),
+          leading: const BackButton(color: Colors.black),
+          elevation: 0,
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -19,7 +24,7 @@ class SignUpPage extends StatelessWidget {
             children: [
               // Centering the title properly
               const SizedBox(
-                height: 100.0,
+                height: 50.0,
               ),
               Center(
                 child: Row(
@@ -42,69 +47,272 @@ class SignUpPage extends StatelessWidget {
               const SizedBox(height: 24.0),
 
               // First Name Input
-              const TextField(
-                decoration: InputDecoration(
-                  labelText: 'What is your first name?',
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'What is your first name?',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
                 ),
               ),
+
               const SizedBox(height: 16.0),
 
               // Last Name Input
-              const TextField(
-                decoration: InputDecoration(
-                  labelText: 'What is your last name?',
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'What is your last name?',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
                 ),
               ),
+
               const SizedBox(height: 16.0),
 
               // Date of Birth Input
-              const TextField(
-                decoration: InputDecoration(
-                  labelText: 'What is your date of birth?',
-                  suffixIcon: Icon(Icons.calendar_today),
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'What is your date of birth?',
+                    suffixIcon: const Icon(Icons.calendar_today),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),
 
               // Phone Number Input
-              const TextField(
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'What is your phone number?',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),
 
               // Gender Dropdown
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Select your gender',
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                items: <String>['Male', 'Female', 'Others'].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {},
+                child: DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Select your gender',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // No visible border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                  items:
+                      <String>['Male', 'Female', 'Others'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {},
+                ),
               ),
+
               const SizedBox(height: 16.0),
 
               // Email Input
-              const TextField(
-                decoration: InputDecoration(
-                  labelText: 'What is your email?',
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 239, 236, 239),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'What is your email?',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+
+              // Address Input
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 236, 239),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Where do you live?',
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 239, 236, 239),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove default border
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove enabled border
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none, // Remove focused border
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
                 ),
               ),
               const SizedBox(height: 32.0),
@@ -140,7 +348,11 @@ class SignUpPage extends StatelessWidget {
                     onPressed: () {
                       // Handle login action
                     },
-                    child: const Text('Login', style: TextStyle(fontSize: 20)),
+                    child: const Text(
+                      'Login',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
