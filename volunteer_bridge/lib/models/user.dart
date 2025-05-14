@@ -25,20 +25,36 @@ abstract class AppUser {
 
 class Organizer extends AppUser {
   final String orgName;
+  final String phoneNumber;
+  final String companyAddress;
+  final String companyDescription;
 
   Organizer({
     required super.id,
     required super.email,
     required this.orgName,
+    required this.phoneNumber,
+    required this.companyAddress,
+    required this.companyDescription,
   }) : super(usertype: "Organizer");
 
   factory Organizer.fromMap(String id, Map<String, dynamic> data) {
-    return Organizer(id: id, email: data['email'], orgName: data['orgName']);
+    return Organizer(
+      id: id,
+      email: data['email'],
+      orgName: data['orgName'],
+      phoneNumber: data['phoneNumber'],
+      companyAddress: data['companyAddress'],
+      companyDescription: data['companyDescription'],
+    );
   }
 
   Map<String, dynamic> toMap() => {
         ...toBaseMap(),
         'orgName': orgName,
+        'phoneNumber': phoneNumber,
+        'companyAddress': companyAddress,
+        'companyDescription': companyDescription,
       };
 
   @override
@@ -46,8 +62,18 @@ class Organizer extends AppUser {
     String? id,
     String? email,
     String? orgName,
+    String? phoneNumber,
+    String? companyAddress,
+    String? companyDescription,
   }) {
-    return Organizer(id: this.id, email: this.email, orgName: this.orgName);
+    return Organizer(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      orgName: orgName ?? this.orgName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      companyAddress: companyAddress ?? this.companyAddress,
+      companyDescription: companyDescription ?? this.companyDescription,
+    );
   }
 }
 

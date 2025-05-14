@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:volunteer_bridge/Services/auth.dart';
-import 'package:volunteer_bridge/landing_page.dart';
+import 'package:volunteer_bridge/Auth/landing_page.dart';
 
 class Login extends ConsumerWidget {
   const Login({super.key});
@@ -50,8 +50,18 @@ class Login extends ConsumerWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  final userCred = AuthService2()
-                      .signIn(emailController.text, passwordController.text);
+                  try {
+                    await AuthService2()
+                        .signIn(emailController.text, passwordController.text);
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content:
+                            Text(e.toString()), // Display the error message
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 155, 93, 229),

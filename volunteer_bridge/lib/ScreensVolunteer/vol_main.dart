@@ -1,38 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:volunteer_bridge/ScreensVolunteer/activities.dart';
+import 'package:volunteer_bridge/ScreensVolunteer/home.dart';
 import 'package:volunteer_bridge/notifications.dart';
-import 'package:volunteer_bridge/home.dart';
-import 'package:volunteer_bridge/profile.dart';
-import 'package:volunteer_bridge/activities.dart';
+import 'package:volunteer_bridge/ScreensVolunteer/profile.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class VolunteerMainPage extends StatefulWidget {
+  const VolunteerMainPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Volunteer Bridge',
-      theme: ThemeData(
-        primaryColor: const Color.fromRGBO(155, 93, 229, 1),
-      ),
-      home: const MainPage(),
-    );
-  }
+  State<VolunteerMainPage> createState() => _VolunteerMainPageState();
 }
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
-
-  @override
-  State<MainPage> createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
+class _VolunteerMainPageState extends State<VolunteerMainPage> {
   int myIndex = 0;
   List<Widget> pageList = [
     const HomePage(),
@@ -177,12 +157,14 @@ class _MainPageState extends State<MainPage> {
                           color: myIndex == 2
                               ? const Color(0xFF9B5DE5)
                               : Colors.grey),
-                      Text("Profile",
-                          style: TextStyle(
-                              color: myIndex == 2
-                                  ? const Color(0xFF9B5DE5)
-                                  : Colors.grey,
-                              fontSize: 12)),
+                      Text(
+                        "Profile",
+                        style: TextStyle(
+                            color: myIndex == 2
+                                ? const Color(0xFF9B5DE5)
+                                : Colors.grey,
+                            fontSize: 12),
+                      ),
                     ],
                   ),
                 ),

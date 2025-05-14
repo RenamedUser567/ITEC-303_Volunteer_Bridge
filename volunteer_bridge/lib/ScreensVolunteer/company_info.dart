@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // For SVG icons if needed
 import 'package:url_launcher/url_launcher.dart'; // For launching links
 
 void main() {
-  runApp(const MaterialApp(
+  runApp(const ProviderScope(
+      child: MaterialApp(
     debugShowCheckedModeBanner: false,
     home: AboutUsPage(),
-  ));
+  )));
 }
 
 class AboutUsPage extends StatelessWidget {

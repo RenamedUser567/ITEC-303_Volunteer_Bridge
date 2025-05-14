@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:volunteer_bridge/ScreensOrganizer/profile_organizer2.dart';
 import 'package:volunteer_bridge/Services/auth.dart';
-import 'package:volunteer_bridge/profile2_user.dart';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class ProfilePageOrg extends StatelessWidget {
+  const ProfilePageOrg({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +22,11 @@ class ProfilePage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10)),
               child: const ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: AssetImage('assets/ksi.jpg'),
+                  backgroundImage: AssetImage('assets/mercedes-benz.jpg'),
                 ),
-                title: Text('Olajide Olayinka Williams Olatunji',
+                title: Text('The Jack of All Trades',
                     style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle:
-                    Text('Total Volunteering Events Attended: \n5 events'),
+                subtitle: Text('Total Volunteering Events Hosted: \n15 events'),
               ),
             ),
             const SizedBox(height: 20),
@@ -48,7 +47,7 @@ class ProfilePage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ProfilePage2(),
+                          builder: (context) => const CompanyGeneralInfo(),
                         ),
                       );
                     },
@@ -61,9 +60,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                     subtitle:
                         const Text('Further secure your account for safety'),
-                    onTap: () {
-                      AuthService2().signOut();
-                    },
+                    onTap: () => AuthService2().signOut(),
                   ),
                   ListTile(
                     leading: const Icon(Icons.help),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:volunteer_bridge/Services/auth.dart';
 import 'package:volunteer_bridge/riverpod/volunteer_provider.dart';
 
 class VolMain extends ConsumerStatefulWidget {
@@ -12,7 +13,7 @@ class VolMain extends ConsumerStatefulWidget {
 class _VolMainConsumerState extends ConsumerState<VolMain> {
   @override
   Widget build(BuildContext context) {
-    final volData = ref.read(volunteerProvider);
+    final volData = ref.watch(volunteerProvider);
 
     return Scaffold(
         body: Center(
@@ -26,6 +27,9 @@ class _VolMainConsumerState extends ConsumerState<VolMain> {
           Text('Email: ${volData?.email}'),
           Text('Location: ${volData?.latitude} & ${volData?.longitude}'),
           Text('Events: ${volData?.completedEvents}'),
+          ElevatedButton(
+              onPressed: () => AuthService2().signOut(),
+              child: const Text('Sign Out')),
         ],
       ),
     ));

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:volunteer_bridge/log_in.dart';
-import 'package:volunteer_bridge/sign_up.dart';
+import 'package:volunteer_bridge/Auth/companysignin1.dart';
+import 'package:volunteer_bridge/Auth/log_in.dart';
+import 'package:volunteer_bridge/Auth/sign_up.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
@@ -20,9 +21,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class LandingPage extends StatelessWidget {
+class LandingPage extends ConsumerStatefulWidget {
   const LandingPage({super.key});
 
+  @override
+  ConsumerState<LandingPage> createState() => _LandingPageState();
+}
+
+class _LandingPageState extends ConsumerState<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +72,7 @@ class LandingPage extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const SignUpPage()));
+                                builder: (context) => CompanyInfoStep1()));
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,

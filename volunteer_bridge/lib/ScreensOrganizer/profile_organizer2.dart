@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:volunteer_bridge/profile_organizer3.dart';
+import 'package:volunteer_bridge/ScreensOrganizer/profile_organizer3.dart';
 
 class CompanyGeneralInfo extends StatelessWidget {
   const CompanyGeneralInfo({super.key});

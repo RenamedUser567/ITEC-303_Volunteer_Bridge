@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:volunteer_bridge/Auth/password_input.dart';
+import 'package:volunteer_bridge/riverpod/organizer_provider.dart';
 
-class CompanyInfoStep2 extends StatelessWidget {
+class CompanyInfoStep2 extends ConsumerWidget {
   final _descriptionController = TextEditingController();
 
   CompanyInfoStep2({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final organizerSignUp = ref.read(organizerSignUpProvider.notifier);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -48,6 +52,8 @@ class CompanyInfoStep2 extends StatelessWidget {
             Expanded(
               child: TextField(
                 controller: _descriptionController,
+                onChanged: (value) =>
+                    organizerSignUp.updateCompanyDescription(value),
                 maxLines: null,
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
@@ -66,7 +72,8 @@ class CompanyInfoStep2 extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Handle form submission or next step
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const PasswordInput()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromRGBO(155, 93, 229, 1),
@@ -87,7 +94,7 @@ class CompanyInfoStep2 extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    // Handle login action
+                    Navigator.of(context).popUntil((route) => route.isFirst);
                   },
                   child: const Text(
                     'Login',
