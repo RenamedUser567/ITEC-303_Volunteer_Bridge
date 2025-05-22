@@ -1,185 +1,171 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:volunteer_bridge/ScreensOrganizer/org_create_event.dart';
+import 'package:volunteer_bridge/ScreensOrganizer/org_edit_tag.dart';
+import 'package:volunteer_bridge/models/event.dart';
+import 'package:volunteer_bridge/models/user.dart';
+import 'package:volunteer_bridge/riverpod/event_list.dart';
+import 'package:volunteer_bridge/riverpod/organizer_provider.dart';
+import 'package:volunteer_bridge/riverpod/volunteer_provider.dart';
 
-// Event data models
-class EventBasicInfo {
+/// Data model for holding general event information.
+class EventInfo {
   String location;
   String time;
   String date;
   String organizer;
+  String description;
 
-  EventBasicInfo({
+  EventInfo({
     required this.location,
     required this.time,
     required this.date,
     required this.organizer,
+    required this.description,
   });
 }
 
-class EventDescription {
-  String content;
-
-  EventDescription({required this.content});
-}
-
-// Predefined tag options
-class TagOption {
-  final String name;
-  bool isSelected;
-
-  TagOption({required this.name, this.isSelected = false});
-}
-
-// Volunteer model
-class Volunteer {
-  final String name;
-
-  Volunteer({required this.name});
-}
-
-// Providers
-final eventBasicInfoProvider = StateProvider<EventBasicInfo>((ref) {
-  return EventBasicInfo(
-    location: "Location",
-    time: "8:00AM - 6:00PM",
-    date: "January 1, 2098",
-    organizer: "Organizer Name",
-  );
-});
-
-final eventDescriptionProvider = StateProvider<EventDescription>((ref) {
-  return EventDescription(
-    content: "Description",
-  );
-});
-
-final tagOptionsProvider = StateProvider<List<TagOption>>((ref) {
-  return [
-    TagOption(name: "Animals", isSelected: false),
-    TagOption(name: "Social Services", isSelected: true),
-    TagOption(name: "Environment", isSelected: false),
-    TagOption(name: "Medical Care", isSelected: false),
-    TagOption(name: "Recreation and Sports", isSelected: false),
-  ];
-});
-
-final volunteersProvider = StateProvider<List<Volunteer>>((ref) {
-  return List.generate(12, (index) => Volunteer(name: "Person"));
-});
-
-class DonationDriveEventPage extends ConsumerStatefulWidget {
-  const DonationDriveEventPage({super.key});
+/// Main widget for the Donation Drive Event Page.
+class OrgEventInfo extends ConsumerStatefulWidget {
+  final String eventId;
+  const OrgEventInfo({super.key, required this.eventId});
 
   @override
-  _DonationDriveEventPageState createState() => _DonationDriveEventPageState();
+  ConsumerState<OrgEventInfo> createState() => _OrgEventInfoPageState();
 }
 
-class _DonationDriveEventPageState
-    extends ConsumerState<DonationDriveEventPage> {
-  int _selectedTabIndex = 0;
+class _OrgEventInfoPageState extends ConsumerState<OrgEventInfo> {
+  @override
+  void initState() {
+    super.initState();
+    ref.read(eventNotifierProvider.notifier).loadEvent(widget.eventId);
+  }
+
+  int _selectedTabIndex = 0; // Used to track which tab is currently active
 
   @override
   Widget build(BuildContext context) {
-    // Access providers
-    final basicInfo = ref.watch(eventBasicInfoProvider);
-    final description = ref.watch(eventDescriptionProvider);
+    final event = ref.watch(eventNotifierProvider);
     final tagOptions = ref.watch(tagOptionsProvider);
-    final volunteers = ref.watch(volunteersProvider);
 
-    // Get selected tags for display
-    final selectedTags = tagOptions;
+    if (event == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            // App Bar with back button only (removed time, battery and data icons)
-            Container(
-              color: const Color(0xFFB768DE),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.arrow_back, color: Colors.black),
-                  ),
-                  const Spacer(),
-                ],
-              ),
+    final volunteersAsync = ref.watch(volunteersProvider(event.id));
+
+    return volunteersAsync.when(
+        loading: () => const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
             ),
-
-            // Banner Image
-            Container(
-              height: 180,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/ImageFrame.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
+        error: (e, st) => Scaffold(
+              body: Center(child: Text('Error loading volunteers: $e')),
             ),
-
-            // Event Title and Participants
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        data: (volunteers) {
+          return Scaffold(
+            body: SafeArea(
+              child: Column(
                 children: [
-                  const Text(
-                    "DonationDrive",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      const Icon(Icons.group, color: Color(0xFFB768DE)),
-                      const SizedBox(width: 5),
-                      Text(
-                        volunteers.length.toString().padLeft(3, '0'),
-                        style: const TextStyle(
-                          color: Color(0xFFB768DE),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Navigation Tabs
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
+                  _buildAppBar(), // Top app bar with back button
+                  _buildBannerImage(), // Banner image section
+                  _buildTitleAndParticipants(event,
+                      volunteers.length), // Event title and participant count
+                  _buildNavigationTabs(), // Two-tab navigation
+                  const SizedBox(height: 16),
                   Expanded(
-                    child: _buildTab("General Information", 0),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildTab("Volunteers", 1),
+                    // Render content based on selected tab
+                    child: _selectedTabIndex == 0
+                        ? _buildGeneralInfoTab(event, tagOptions)
+                        : _buildVolunteersTab(volunteers),
                   ),
                 ],
               ),
             ),
+          );
+        });
+  }
 
-            const SizedBox(height: 16),
+  /// Builds the top app bar with back button.
+  Widget _buildAppBar() {
+    return Container(
+      color: const Color(0xFFB768DE),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: const Icon(Icons.arrow_back, color: Colors.black),
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
 
-            // Content based on selected tab
-            Expanded(
-              child: _selectedTabIndex == 0
-                  ? _buildGeneralInfoTab(basicInfo, description, selectedTags)
-                  : _buildVolunteersTab(volunteers),
-            ),
-          ],
+  /// Displays the top banner image for the event.
+  Widget _buildBannerImage() {
+    return Container(
+      height: 180,
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/balloon.jpg'),
+          fit: BoxFit.cover,
         ),
       ),
     );
   }
 
+  /// Shows the event title and number of participants.
+  Widget _buildTitleAndParticipants(Event? event, int participantCount) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            event?.title ?? 'loading...',
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Row(
+            children: [
+              const Icon(Icons.group, color: Color(0xFFB768DE)),
+              const SizedBox(width: 5),
+              Text(
+                participantCount.toString().padLeft(3, '0'),
+                style: const TextStyle(
+                  color: Color(0xFFB768DE),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds the tab navigation UI.
+  Widget _buildNavigationTabs() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Expanded(child: _buildTab("General Information", 0)),
+          const SizedBox(width: 10),
+          Expanded(child: _buildTab("Volunteers", 1)),
+        ],
+      ),
+    );
+  }
+
+  /// Builds individual tab buttons.
   Widget _buildTab(String title, int index) {
     bool isSelected = _selectedTabIndex == index;
     return GestureDetector(
@@ -209,114 +195,116 @@ class _DonationDriveEventPageState
     );
   }
 
-  Widget _buildGeneralInfoTab(EventBasicInfo basicInfo,
-      EventDescription description, List<TagOption> tags) {
+  /// Builds the "General Info" tab content.
+  Widget _buildGeneralInfoTab(Event? event, List<TagOption> tags) {
+    if (event == null) {
+      return const Center(child: Text("Event not found"));
+    }
+
+    final organizerNameAsync =
+        ref.watch(organizerNameProvider(event.organizerId));
+
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Basic Information Section
-              _buildSectionTitle("Basic Information",
-                  onEdit: () => _showBasicInfoEditDialog(basicInfo)),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8E1F4),
-                  borderRadius: BorderRadius.circular(12),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle("Basic Information", onEdit: () async {
+              _editBasicInfo(event);
+            } // _editBasicInfo(info)
                 ),
-                child: Column(
-                  children: [
-                    _buildInfoRow(Icons.location_on, basicInfo.location),
-                    const SizedBox(height: 12),
-                    _buildInfoRow(Icons.access_time, basicInfo.time),
-                    const SizedBox(height: 12),
-                    _buildInfoRow(Icons.calendar_today, basicInfo.date),
-                    const SizedBox(height: 12),
-                    _buildInfoRow(Icons.favorite, basicInfo.organizer),
-                  ],
-                ),
+            _buildInfoCard([
+              _buildInfoRow(Icons.location_on, event.location),
+              _buildInfoRow(Icons.access_time,
+                  '${DateFormat('MM/dd/yyyy').format(event.start)} -  ${DateFormat('MM/dd/yyyy').format(event.end)}'),
+              _buildInfoRow(Icons.calendar_today,
+                  '${event.timeStart} -  ${event.timeEnd}'),
+              organizerNameAsync.when(
+                data: (name) => _buildInfoRow(Icons.favorite, name),
+                loading: () => _buildInfoRow(Icons.favorite, 'Loading...'),
+                error: (_, __) => _buildInfoRow(Icons.favorite, 'Error'),
               ),
-
-              const SizedBox(height: 16),
-
-              // Description Section
-              _buildSectionTitle("Description",
-                  onEdit: () => _showDescriptionEditDialog(description)),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8E1F4),
-                  borderRadius: BorderRadius.circular(12),
+            ]),
+            const SizedBox(height: 16),
+            _buildSectionTitle("Description", onEdit: () async {
+              _editDescription(event);
+            } //_editDescription(info)
                 ),
-                child: Text(
-                  description.content,
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Tags Section - Removed edit button
-              const Padding(
-                padding: EdgeInsets.only(bottom: 10),
-                child: Text(
-                  "Tags",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: tags
-                    .map((tag) => GestureDetector(
-                          onTap: () {
-                            // Toggle tag selection directly from the main view
-                            final updatedTags = [...tags];
-                            final index = updatedTags
-                                .indexWhere((t) => t.name == tag.name);
-                            if (index >= 0) {
-                              updatedTags[index] = TagOption(
-                                  name: tag.name, isSelected: !tag.isSelected);
-                              ref.read(tagOptionsProvider.notifier).state =
-                                  updatedTags;
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: tag.isSelected
-                                  ? const Color(0xFFB768DE)
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: tag.isSelected
-                                    ? const Color(0xFFB768DE)
-                                    : Colors.grey.shade300,
-                              ),
-                            ),
-                            child: Text(
-                              tag.name,
-                              style: TextStyle(
-                                  color: tag.isSelected
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ))
-                    .toList(),
-              ),
-            ],
-          ),
-        ));
+            _buildInfoCard([
+              Text(event.description, style: const TextStyle(fontSize: 14)),
+            ]),
+            const SizedBox(height: 16),
+            _buildSectionTitle("Tag", onEdit: () async {
+              showTagPickerDialog(context, ref, event);
+            }),
+            displayTag(event.tag),
+            //_buildTagList(tags), // Tag chips (selectable)
+          ],
+        ),
+      ),
+    );
   }
 
+  /// Reusable card container for sections.
+  Widget _buildInfoCard(List<Widget> children) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8E1F4),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (int i = 0; i < children.length; i++) ...[
+            children[i],
+            if (i < children.length - 1) const SizedBox(height: 12),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// Displays a non-interactive tag based on the event's tag name.
+  Widget displayTag(String eventTag) {
+    // Optional: Define styles or colors here
+    const tagColor = Color(0xFFB768DE);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: tagColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: tagColor),
+      ),
+      child: Text(
+        eventTag,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  /*
+  /// Toggles tag selection and updates provider state.
+  void _toggleTag(TagOption tag) {
+    final updatedTags = ref.read(tagOptionsProvider).map((t) {
+      // If this is the selected tag, toggle it on
+      if (t.name == tag.name) {
+        return TagOption(name: t.name, isSelected: true);
+      }
+      // All others should be deselected
+      return TagOption(name: t.name, isSelected: false);
+    }).toList();
+
+    ref.read(tagOptionsProvider.notifier).state = updatedTags;
+  }
+  */
+
+  /// Builds the volunteers tab.
   Widget _buildVolunteersTab(List<Volunteer> volunteers) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -330,45 +318,49 @@ class _DonationDriveEventPageState
         ),
         itemCount: volunteers.length,
         itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFF2EAF7),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 60,
-                  height: double.infinity,
-                  margin: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE0E0E0),
-                    borderRadius: BorderRadius.circular(8),
-                    image: const DecorationImage(
-                      image: AssetImage('assets/placeholder.jpg'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      volunteers[index].name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
+          return _buildVolunteerCard(volunteers[index]);
         },
       ),
     );
   }
 
+  /// Card UI for displaying a single volunteer.
+  Widget _buildVolunteerCard(Volunteer volunteer) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2EAF7),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 60,
+            height: double.infinity,
+            margin: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE0E0E0),
+              borderRadius: BorderRadius.circular(8),
+              image: const DecorationImage(
+                image: AssetImage('assets/placeholder.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                '${volunteer.firstName} ${volunteer.lastName}',
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Reusable section title with edit icon.
   Widget _buildSectionTitle(String title, {required Function onEdit}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -376,10 +368,7 @@ class _DonationDriveEventPageState
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(width: 5),
           GestureDetector(
@@ -391,6 +380,7 @@ class _DonationDriveEventPageState
     );
   }
 
+  /// Row showing an icon and associated text.
   Widget _buildInfoRow(IconData icon, String text) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -398,557 +388,217 @@ class _DonationDriveEventPageState
         Icon(icon, size: 20),
         const SizedBox(width: 12),
         Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(fontSize: 14),
-          ),
+          child: Text(text, style: const TextStyle(fontSize: 14)),
         ),
       ],
     );
   }
 
-  // Popup Dialogs for Editing
-  void _showBasicInfoEditDialog(EventBasicInfo currentInfo) {
-    final TextEditingController locationController =
-        TextEditingController(text: currentInfo.location);
-    final TextEditingController timeController =
-        TextEditingController(text: currentInfo.time);
-    final TextEditingController dateController =
-        TextEditingController(text: currentInfo.date);
-    final TextEditingController organizerController =
-        TextEditingController(text: currentInfo.organizer);
+  /// Shows dialog to edit basic info.
+  void _editBasicInfo(Event? event) {
+    if (event == null) return;
+
+    final locationController = TextEditingController(text: event.location);
+    final startTimeController = TextEditingController(text: event.timeStart);
+    final endTimeController = TextEditingController(text: event.timeEnd);
+    final startDateController = TextEditingController(
+        text: DateFormat('MM/dd/yyyy').format(event.start));
+    final endDateController =
+        TextEditingController(text: DateFormat('MM/dd/yyyy').format(event.end));
+    //final organizerController = TextEditingController(text: event.organizer);
 
     showDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+      builder: (context) => AlertDialog(
+        title: const Text("Edit Basic Information"),
+        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Dialog Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Edit Basic Information",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
-                  ),
-                ],
+              _buildTextField("Location", locationController),
+              _buildTextField("Start Time", startTimeController,
+                  icon: Icons.access_time,
+                  onTap: () =>
+                      _selectTime(startTimeController, event.timeStart)),
+              _buildTextField(
+                "End Time",
+                endTimeController,
+                icon: Icons.access_time,
+                onTap: () => _selectTime(endTimeController, event.timeEnd),
               ),
-              const Divider(height: 24),
+              _buildTextField("Start Date", startDateController,
+                  icon: Icons.calendar_today,
+                  onTap: () => _selectDate(startDateController)),
+              _buildTextField("End Date", endDateController,
+                  icon: Icons.calendar_today,
+                  onTap: () => _selectDate(endDateController))
 
-              // Dialog Content
-              SizedBox(
-                height: 320, // Fixed height for scrollable content
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Location",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: locationController,
-                        decoration: InputDecoration(
-                          hintText: "Enter location",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 16),
-                        ),
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "Time",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: timeController,
-                        decoration: InputDecoration(
-                          hintText: "Enter time",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 16),
-                          suffixIcon: const Icon(Icons.access_time),
-                        ),
-                        onTap: () async {
-                          TimeOfDay? pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: const TimeOfDay(hour: 8, minute: 0),
-                          );
-
-                          if (pickedTime != null) {
-                            // Format the start time
-                            final startHour = pickedTime.hourOfPeriod == 0
-                                ? 12
-                                : pickedTime.hourOfPeriod;
-                            final startMinute =
-                                pickedTime.minute.toString().padLeft(2, '0');
-                            final startPeriod =
-                                pickedTime.period == DayPeriod.am ? 'AM' : 'PM';
-
-                            // Calculate end time (8 hours later)
-                            final endHour = (pickedTime.hour + 8) % 24;
-                            final endTimeOfDay = TimeOfDay(
-                                hour: endHour, minute: pickedTime.minute);
-                            final endHourDisplay =
-                                endTimeOfDay.hourOfPeriod == 0
-                                    ? 12
-                                    : endTimeOfDay.hourOfPeriod;
-                            final endMinute =
-                                endTimeOfDay.minute.toString().padLeft(2, '0');
-                            final endPeriod =
-                                endTimeOfDay.period == DayPeriod.am
-                                    ? 'AM'
-                                    : 'PM';
-
-                            timeController.text =
-                                "$startHour:$startMinute$startPeriod - $endHourDisplay:$endMinute$endPeriod";
-                          }
-                        },
-                        readOnly:
-                            true, // Make it read-only to prevent keyboard input
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "Date",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: dateController,
-                        decoration: InputDecoration(
-                          hintText: "Select date",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 16),
-                          suffixIcon: const Icon(Icons.calendar_today),
-                        ),
-                        onTap: () async {
-                          DateTime? pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime(2098, 10, 25),
-                            firstDate: DateTime(2025),
-                            lastDate: DateTime(2099),
-                          );
-
-                          if (pickedDate != null) {
-                            dateController.text =
-                                "${_getMonthName(pickedDate.month)} ${pickedDate.day}, ${pickedDate.year}";
-                          }
-                        },
-                        readOnly: true,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "Organizer",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: organizerController,
-                        decoration: InputDecoration(
-                          hintText: "Enter organizer name",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Save Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Update the state using Riverpod
-                    ref.read(eventBasicInfoProvider.notifier).state =
-                        EventBasicInfo(
-                      location: locationController.text,
-                      time: timeController.text,
-                      date: dateController.text,
-                      organizer: organizerController.text,
-                    );
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text(
-                    "Save Changes",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
+              //_buildTextField("Organizer", organizerController),
             ],
           ),
         ),
-      ),
-    );
-  }
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel")),
+          TextButton(
+            onPressed: () async {
+              final updated = event.copyWith(
+                timeStart: startTimeController.text,
+                timeEnd: endTimeController.text,
+                start: parseDateTime(startDateController.text.trim()),
+                end: parseDateTime(endDateController.text.trim()),
+              );
 
-  void _showDescriptionEditDialog(EventDescription currentDescription) {
-    final TextEditingController descriptionController =
-        TextEditingController(text: currentDescription.content);
-    int wordCount = _countWords(currentDescription.content);
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => StatefulBuilder(builder: (context, setDialogState) {
-        return Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Dialog Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Edit Description",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.close),
-                    ),
-                  ],
-                ),
-                const Divider(height: 24),
-
-                // Word Count Indicator
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      "$wordCount/100 words",
-                      style: TextStyle(
-                        color: wordCount > 100 ? Colors.red : Colors.grey,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Description Editor
-                Container(
-                  height: 300,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade400),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TextField(
-                    controller: descriptionController,
-                    decoration: const InputDecoration(
-                      hintText: "Enter event description",
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.all(12),
-                    ),
-                    maxLines: null,
-                    expands: true,
-                    onChanged: (value) {
-                      setDialogState(() {
-                        wordCount = _countWords(value);
-                      });
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Save Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: wordCount <= 100
-                        ? () {
-                            // Update the state using Riverpod
-                            ref.read(eventDescriptionProvider.notifier).state =
-                                EventDescription(
-                              content: descriptionController.text,
-                            );
-                            Navigator.pop(context);
-                          }
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      disabledBackgroundColor: Colors.grey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    child: const Text(
-                      "Save Changes",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }),
-    );
-  }
-
-  void _showTagsEditDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => StatefulBuilder(builder: (context, setDialogState) {
-        // Create a local copy of tag options for editing
-        List<TagOption> editableTags = ref
-            .read(tagOptionsProvider)
-            .map((tag) => TagOption(name: tag.name, isSelected: tag.isSelected))
-            .toList();
-
-        return Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Dialog Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Edit Tags",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.close),
-                    ),
-                  ],
-                ),
-                const Divider(height: 24),
-
-                // Tags Selection
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 12,
-                  children: editableTags
-                      .map((tag) => GestureDetector(
-                            onTap: () {
-                              setDialogState(() {
-                                tag.isSelected = !tag.isSelected;
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: tag.isSelected
-                                    ? const Color(0xFFB768DE)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: tag.isSelected
-                                      ? const Color(0xFFB768DE)
-                                      : Colors.grey.shade300,
-                                ),
-                              ),
-                              child: Text(
-                                tag.name,
-                                style: TextStyle(
-                                  color: tag.isSelected
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontWeight: tag.isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                            ),
-                          ))
-                      .toList(),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Save Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Update the state using Riverpod
-                      ref.read(tagOptionsProvider.notifier).state =
-                          editableTags;
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    child: const Text(
-                      "Save Changes",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }),
-    );
-  }
-
-  int _countWords(String text) {
-    if (text.trim().isEmpty) return 0;
-    return text.trim().split(RegExp(r'\s+')).length;
-  }
-
-  Widget _buildParachuteGift(double size, double rotation) {
-    return Transform.rotate(
-      angle: rotation * 0.0174533, // Convert degrees to radians
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: size,
-            height: size / 2,
-            decoration: BoxDecoration(
-              color: const Color(0xFF24B6C9),
-              borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(size / 2)),
-            ),
-          ),
-          ...List.generate(
-            5,
-            (index) => Padding(
-              padding: EdgeInsets.symmetric(horizontal: size / 12, vertical: 1),
-              child: Container(
-                width: 1,
-                height: size / 3,
-                color: Colors.black.withOpacity(0.7),
-              ),
-            ),
-          ),
-          Container(
-            width: size / 2,
-            height: size / 2,
-            decoration: BoxDecoration(
-              color: Colors.red.shade400,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Center(
-              child: Container(
-                width: size / 4,
-                height: 2,
-                color: Colors.white,
-              ),
-            ),
+              await ref
+                  .read(eventNotifierProvider.notifier)
+                  .updateEvent(updated);
+              /*
+              ref.read(eventInfoProvider.notifier).state = EventInfo(
+                location: locationController.text,
+                time: timeController.text,
+                date: dateController.text,
+                //organizer: organizerController.text,
+                //description: info.description,
+              );
+              Navigator.pop(context);
+              */
+              Navigator.pop(context);
+            },
+            child: const Text("Save"),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCloud(double size) {
-    return Container(
-      width: size,
-      height: size / 2,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(size / 2),
+  /// Shows dialog to edit event description.
+  void _editDescription(Event? event) {
+    final descriptionController =
+        TextEditingController(text: event?.description ?? '');
+
+    if (event == null) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Edit Description"),
+        content: TextField(
+          controller: descriptionController,
+          decoration:
+              const InputDecoration(hintText: "Enter event description"),
+          maxLines: 5,
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel")),
+          TextButton(
+            onPressed: () async {
+              final updated = event.copyWith(
+                  description: descriptionController.text.trim());
+
+              await ref
+                  .read(eventNotifierProvider.notifier)
+                  .updateEvent(updated);
+              Navigator.pop(context);
+            },
+            child: const Text("Save"),
+          ),
+        ],
       ),
     );
   }
 
-  String _getMonthName(int month) {
-    final months = [
-      "",
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ];
-    return months[month];
+  /// Reusable form field builder.
+  Widget _buildTextField(String label, TextEditingController controller,
+      {IconData? icon, Function? onTap}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          suffixIcon: icon != null ? Icon(icon) : null,
+        ),
+        onTap: onTap != null ? () => onTap() : null,
+        readOnly: onTap != null,
+      ),
+    );
   }
+
+  /// Opens a time picker dialog and updates the field.
+  Future<void> _selectTime(
+      TextEditingController controller, String time) async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: parseTimeString(time), //TimeOfDay.now(),
+    );
+    if (pickedTime != null) {
+      //controller.text = time.format(context);
+      final String period = pickedTime.period == DayPeriod.am ? 'AM' : 'PM';
+      final int hour =
+          pickedTime.hourOfPeriod == 0 ? 12 : pickedTime.hourOfPeriod;
+      controller.text =
+          "$hour:${pickedTime.minute.toString().padLeft(2, '0')} $period";
+    }
+  }
+
+  /// Opens a date picker dialog and updates the field.
+  Future<void> _selectDate(TextEditingController controller) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2099),
+    );
+    if (pickedDate != null) {
+      controller.text = DateFormat('MM/dd/yyyy').format(pickedDate);
+    }
+  }
+}
+
+TimeOfDay parseTimeOfDay(String input) {
+  final format = DateFormat.jm(); // e.g. "5:08 PM"
+  return TimeOfDay.fromDateTime(format.parse(input));
+}
+
+TimeOfDay parseTimeString(String timeString) {
+  // Handle empty or null cases
+  if (timeString.isEmpty) {
+    return TimeOfDay.now();
+  }
+
+  // Remove any potential whitespace
+  timeString = timeString.trim();
+
+  // Split the string to separate time and AM/PM
+  List<String> parts = timeString.split(' ');
+  if (parts.length != 2) {
+    // Invalid format, return current time as fallback
+    return TimeOfDay.now();
+  }
+
+  String time = parts[0];
+  String period = parts[1].toUpperCase();
+
+  // Split hours and minutes
+  List<String> timeParts = time.split(':');
+  if (timeParts.length != 2) {
+    // Invalid format, return current time as fallback
+    return TimeOfDay.now();
+  }
+
+  int hour = int.tryParse(timeParts[0]) ?? 0;
+  int minute = int.tryParse(timeParts[1]) ?? 0;
+
+  // Adjust hour for AM/PM
+  if (period == 'PM' && hour < 12) {
+    hour += 12;
+  } else if (period == 'AM' && hour == 12) {
+    hour = 0;
+  }
+
+  return TimeOfDay(hour: hour, minute: minute);
 }

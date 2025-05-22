@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:volunteer_bridge/ScreensVolunteer/activities.dart';
-import 'package:volunteer_bridge/ScreensVolunteer/home.dart';
+import 'package:volunteer_bridge/ScreensVolunteer/home2.dart';
 import 'package:volunteer_bridge/notifications.dart';
 import 'package:volunteer_bridge/ScreensVolunteer/profile.dart';
 
@@ -15,7 +15,7 @@ class VolunteerMainPage extends StatefulWidget {
 class _VolunteerMainPageState extends State<VolunteerMainPage> {
   int myIndex = 0;
   List<Widget> pageList = [
-    const HomePage(),
+    const HomePage2(),
     const ActivitiesPage(),
     const ProfilePage(),
   ];

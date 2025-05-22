@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:volunteer_bridge/ScreensVolunteer/profile.dart';
 import 'package:volunteer_bridge/ScreensOrganizer/org_activities.dart';
 import 'package:volunteer_bridge/ScreensOrganizer/org_create_event.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:volunteer_bridge/ScreensOrganizer/profile_organizer.dart';
 
 class OrganizerMainPage extends StatefulWidget {

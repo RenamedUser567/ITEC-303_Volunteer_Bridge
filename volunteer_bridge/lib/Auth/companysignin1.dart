@@ -193,9 +193,9 @@ class CompanyInfoStep1 extends ConsumerWidget {
                       return 'Please Input Contact Number';
                     }
 
-                    final phoneExp = RegExp(r'^\d{10}$');
+                    final phoneExp = RegExp(r'^\d{11}$');
                     if (!phoneExp.hasMatch(value)) {
-                      return 'Enter a valid 10-digit phone number';
+                      return 'Enter a valid 11-digit phone number';
                     }
 
                     return null;

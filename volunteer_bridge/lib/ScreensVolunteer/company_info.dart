@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart'; // For SVG icons if needed
-import 'package:url_launcher/url_launcher.dart'; // For launching links
+import 'package:url_launcher/url_launcher.dart';
+import 'package:volunteer_bridge/notifications.dart';
+import 'package:volunteer_bridge/riverpod/organizer_provider.dart';
 
-void main() {
-  runApp(const ProviderScope(
-      child: MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: AboutUsPage(),
-  )));
+class AboutUsPage extends ConsumerStatefulWidget {
+  final Color purple = const Color(0xFFEDE1F8);
+  final String orgId;
+  const AboutUsPage({super.key, required this.orgId});
+
+  @override
+  ConsumerState<AboutUsPage> createState() => _AboutUsPageState();
 }
 
-class AboutUsPage extends StatelessWidget {
-  final Color purple = const Color(0xFFEDE1F8);
-
-  const AboutUsPage({super.key});
-
+class _AboutUsPageState extends ConsumerState<AboutUsPage> {
   void _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
@@ -27,6 +25,14 @@ class AboutUsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final orgData = ref.watch(organizerProvider);
+
+    if (orgData == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -34,16 +40,9 @@ class AboutUsPage extends StatelessWidget {
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.only(left: 16.0),
-          child: SvgPicture.asset(
-            'assets/Handshake.svg',
-            height: 50,
-            width: 50,
-          ),
-        ),
-        title: const Text(
-          "Volunteer Bridge",
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22),
+          child: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back)),
         ),
         actions: [
           Stack(
@@ -55,7 +54,10 @@ class AboutUsPage extends StatelessWidget {
                   color: Colors.black,
                   size: 30,
                 ),
-                onPressed: () {},
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NotificationsPage())),
               ),
               Positioned(
                 right: 8,
@@ -91,63 +93,32 @@ class AboutUsPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: purple,
+                color: widget.purple,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
                 children: [
-                  const Text(
-                    "Hearts United",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  Text(
+                    orgData.orgName,
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  const InfoRow(
-                      icon: Icons.location_on,
-                      text:
-                          "456 Sampaguita Street Barangay San Isidro Quezon City, Metro Manila 1100, Philippines"),
-                  const InfoRow(
-                      icon: Icons.calendar_today, text: "October 25, 2098"),
-                  const InfoRow(icon: Icons.phone, text: "09785603941"),
-                  const InfoRow(
-                      icon: Icons.email, text: "contact@heartsunited.org"),
-                  const InfoRow(
-                      icon: Icons.language, text: "www.heartsunited.org"),
+                  InfoRow(
+                      icon: Icons.location_on, text: orgData.companyAddress),
+                  InfoRow(icon: Icons.phone, text: orgData.phoneNumber),
+                  InfoRow(icon: Icons.email, text: orgData.email),
+                  InfoRow(
+                      icon: Icons.language, text: "www.${orgData.orgName}.org"),
                   const SizedBox(height: 16),
-                  const SectionHeader("Who We Are"),
-                  const Text(
-                    "At Hearts United, we believe that compassion is a powerful force for change. Founded in 2018, our organization is built on the simple yet profound idea that communities thrive when people come together for a common purpose. We are a passionate team of organizers, advocates, and everyday citizens committed to making a lasting impact through volunteerism.",
-                  ),
-                  const SizedBox(height: 12),
-                  const SectionHeader("Our Mission"),
-                  const Text(
-                    "To unite hearts through community-driven volunteer events that uplift lives, promote kindness, and foster social responsibility. We aim to create meaningful opportunities where people can give back, connect, and be part of something greater than themselves.",
-                  ),
-                  const SizedBox(height: 12),
-                  const SectionHeader("Join Us"),
+                  const SectionHeader("Company Description"),
                   GestureDetector(
-                    onTap: () => _launchURL("https://www.heartsunited.org"),
+                    onTap: () {}, //_launchURL("https://www.heartsunited.org"),
                     child: RichText(
-                      text: const TextSpan(
-                        style: TextStyle(color: Colors.black),
+                      text: TextSpan(
+                        style: const TextStyle(color: Colors.black),
                         children: [
-                          TextSpan(
-                            text:
-                                "Whether you're an individual looking to make a difference, or an organization wanting to collaborate, Hearts United welcomes you. Together, we can build a stronger, more compassionate community—one volunteer event at a time. ",
-                          ),
-                          TextSpan(
-                            text: "www.heartsunited.org",
-                            style: TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline),
-                          ),
-                          TextSpan(text: " | "),
-                          TextSpan(
-                            text: "contact@heartsunited.org",
-                            style: TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline),
-                          ),
-                          TextSpan(text: " | 📍 Based in Metro City, USA"),
+                          TextSpan(text: orgData.companyDescription),
                         ],
                       ),
                     ),

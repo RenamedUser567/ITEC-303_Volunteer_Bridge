@@ -18,6 +18,15 @@ class OrganizerNotifier extends Notifier<Organizer?> {
     }
   }
 
+  Future<void> updateOrganizer(Organizer updatedOrganizer) async {
+    await FirebaseFirestore.instance
+        .collection('organizers')
+        .doc(updatedOrganizer.id)
+        .update(updatedOrganizer.toMap());
+
+    state = updatedOrganizer;
+  }
+
   void clear() {
     state = null;
   }
@@ -25,6 +34,8 @@ class OrganizerNotifier extends Notifier<Organizer?> {
 
 final organizerProvider =
     NotifierProvider<OrganizerNotifier, Organizer?>(() => OrganizerNotifier());
+
+const String defaultProfileUrl = 'assets/placeholder.jpg';
 
 class OrganizerSignUpNotifier extends Notifier<Organizer> {
   @override
@@ -36,6 +47,7 @@ class OrganizerSignUpNotifier extends Notifier<Organizer> {
       phoneNumber: '',
       companyAddress: '',
       companyDescription: '',
+      profileUrl: defaultProfileUrl,
     );
   }
 
@@ -59,6 +71,10 @@ class OrganizerSignUpNotifier extends Notifier<Organizer> {
     state = state.copyWith(companyDescription: value);
   }
 
+  void updateProfileUrl(String value) {
+    state = state.copyWith(profileUrl: value);
+  }
+
   void reset() {
     state = build();
   }
@@ -68,3 +84,13 @@ final organizerSignUpProvider =
     NotifierProvider<OrganizerSignUpNotifier, Organizer>(
   OrganizerSignUpNotifier.new,
 );
+
+//get name of organizer given id
+final organizerNameProvider =
+    FutureProvider.family<String, String>((ref, organizerId) async {
+  final doc = await FirebaseFirestore.instance
+      .collection('organizers')
+      .doc(organizerId)
+      .get();
+  return doc.data()?['orgName'] ?? 'Unknown';
+});

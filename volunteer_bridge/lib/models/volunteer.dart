@@ -10,6 +10,7 @@ class Volunteer {
   final double longitude;
   final String email;
   final int completedEvents;
+  final List<String>? joinedEventIds;
 
   Volunteer({
     required this.id,
@@ -21,9 +22,15 @@ class Volunteer {
     required this.longitude,
     required this.email,
     this.completedEvents = 0,
+    this.joinedEventIds = const [],
   });
 
   factory Volunteer.fromMap(String id, Map<String, dynamic> data) {
+    List<String> eventIds = [];
+    if (data['joinedEventIds'] != null) {
+      eventIds = List<String>.from(data['joinedEventIds']);
+    }
+
     return Volunteer(
       id: id,
       firstName: data['firstName'],
@@ -36,6 +43,7 @@ class Volunteer {
       longitude: (data['longitude'] as num).toDouble(),
       email: data['email'],
       completedEvents: data['completedEvents'] ?? 0,
+      joinedEventIds: eventIds,
     );
   }
 
@@ -49,6 +57,7 @@ class Volunteer {
       'longitude': longitude,
       'email': email,
       'completedEvents': completedEvents,
+      'joinedEventIds': joinedEventIds,
     };
   }
 
@@ -62,6 +71,7 @@ class Volunteer {
     double? longitude,
     String? email,
     int? completedEvents,
+    List<String>? joinedEvents,
   }) {
     return Volunteer(
       id: id ?? this.id,
@@ -72,6 +82,7 @@ class Volunteer {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       email: email ?? this.email,
+      joinedEventIds: joinedEventIds ?? this.joinedEventIds,
     );
   }
 }

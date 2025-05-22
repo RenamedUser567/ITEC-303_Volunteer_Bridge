@@ -1,8 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:volunteer_bridge/ScreensOrganizer/profile_organizer3.dart';
+import 'package:volunteer_bridge/riverpod/organizer_provider.dart';
 
-class CompanyGeneralInfo extends StatelessWidget {
+class CompanyGeneralInfo extends ConsumerStatefulWidget {
   const CompanyGeneralInfo({super.key});
+
+  @override
+  ConsumerState<CompanyGeneralInfo> createState() => _CompanyGeneralInfoState();
+}
+
+class _CompanyGeneralInfoState extends ConsumerState<CompanyGeneralInfo> {
+  late final TextEditingController _orgNameController = TextEditingController();
+  late final TextEditingController _phoneController = TextEditingController();
+  late final TextEditingController _cityController = TextEditingController();
+  late final TextEditingController _emailController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final orgData = ref.read(organizerProvider);
+      if (orgData != null) {
+        _orgNameController.text = orgData.orgName;
+        _phoneController.text = orgData.phoneNumber;
+        _cityController.text = orgData.companyAddress;
+        _emailController.text = orgData.email;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _orgNameController.dispose();
+    _phoneController.dispose();
+    _cityController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +66,7 @@ class CompanyGeneralInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    // Navigate to profile_organizer2.dart
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CompanyGeneralInfo(),
-                      ),
-                    );
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(155, 93, 229, 1),
                     shape: RoundedRectangleBorder(
@@ -72,36 +99,38 @@ class CompanyGeneralInfo extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            const TextField(
-              decoration: InputDecoration(
-                labelText: "Company Name",
-                border: OutlineInputBorder(),
-              ),
-            ),
+            // Company Name
+            _buildTextField(_orgNameController, 'Company Name',
+                prefixIcon: const Icon(Icons.business)),
             const SizedBox(height: 10),
-            const TextField(
-              decoration: InputDecoration(
-                labelText: "Company Email",
-                border: OutlineInputBorder(),
-              ),
-            ),
+            _buildTextField(_phoneController, 'Company Number',
+                prefixIcon: const Icon(Icons.phone)),
             const SizedBox(height: 10),
-            const TextField(
-              decoration: InputDecoration(
-                labelText: "Company Number",
-                border: OutlineInputBorder(),
-              ),
-            ),
+            _buildTextField(_cityController, 'Company Address',
+                prefixIcon: const Icon(Icons.location_city)),
             const SizedBox(height: 10),
-            const TextField(
-              decoration: InputDecoration(
-                labelText: "Company Location/City",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
+            _buildTextField(_emailController, 'Email',
+                readOnly: true, prefixIcon: const Icon(Icons.email)),
+            const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                final notifier = ref.read(organizerProvider.notifier);
+                final currentOrg = ref.read(organizerProvider);
+
+                if (currentOrg == null) return;
+
+                final updatedOrg = currentOrg.copyWith(
+                  orgName: _orgNameController.text.trim(),
+                  phoneNumber: _phoneController.text.trim(),
+                  companyAddress: _cityController.text.trim(),
+                );
+
+                await notifier.updateOrganizer(updatedOrg);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Profile updated successfully')),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromRGBO(155, 93, 229, 1),
                 minimumSize: const Size(double.infinity, 50),
@@ -116,6 +145,28 @@ class CompanyGeneralInfo extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label, {
+    Widget? prefixIcon,
+    bool? readOnly,
+  }) {
+    final isReadOnly = readOnly ?? controller.text.isNotEmpty;
+
+    return TextField(
+      controller: controller,
+      readOnly: isReadOnly,
+      enabled: !isReadOnly,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: const Color(0xFFF5F1F8),
+        prefixIcon: prefixIcon,
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }

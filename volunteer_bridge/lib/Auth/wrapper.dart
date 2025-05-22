@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:volunteer_bridge/ScreensOrganizer/orgTry.dart';
+import 'package:volunteer_bridge/ScreensOrganizer/org_edit_tag.dart';
 import 'package:volunteer_bridge/ScreensOrganizer/org_main.dart';
-import 'package:volunteer_bridge/ScreensVolunteer/voltry.dart';
 import 'package:volunteer_bridge/Auth/log_in.dart';
 import 'package:volunteer_bridge/ScreensVolunteer/vol_main.dart';
 import 'package:volunteer_bridge/riverpod/auth_provider.dart';
@@ -34,6 +33,7 @@ class Wrapper2 extends ConsumerWidget {
 
             final data = snapshot.data!.data() as Map<String, dynamic>;
             final userType = data['usertype'];
+            ref.invalidate(tagOptionsProvider);
 
             if (userType == 'Volunteer') {
               ref.read(volunteerProvider.notifier).loadVolunteer(user.uid);

@@ -1,12 +1,22 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:volunteer_bridge/Services/auth.dart';
 import 'package:volunteer_bridge/ScreensVolunteer/profile2_user.dart';
+import 'package:volunteer_bridge/riverpod/volunteer_provider.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 
   @override
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends ConsumerState<ProfilePage> {
+  @override
   Widget build(BuildContext context) {
+    final volData = ref.watch(volunteerProvider);
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -20,14 +30,13 @@ class ProfilePage extends StatelessWidget {
               color: const Color.fromRGBO(238, 230, 249, 1),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              child: const ListTile(
+              child: ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: AssetImage('assets/ksi.jpg'),
+                  backgroundImage: buildProfileImage(volData!.profileUrl),
                 ),
-                title: Text('Olajide Olayinka Williams Olatunji',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle:
-                    Text('Total Volunteering Events Attended: \n5 events'),
+                title: Text('${volData.firstName} ${volData.lastName}',
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text('Events Completed: ${volData.completedEvents}'),
               ),
             ),
             const SizedBox(height: 20),
@@ -89,5 +98,15 @@ class ProfilePage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+ImageProvider buildProfileImage(String profileUrl) {
+  if (profileUrl.startsWith('http')) {
+    return NetworkImage(profileUrl);
+  } else if (profileUrl.startsWith('/')) {
+    return FileImage(File(profileUrl));
+  } else {
+    return AssetImage(profileUrl);
   }
 }

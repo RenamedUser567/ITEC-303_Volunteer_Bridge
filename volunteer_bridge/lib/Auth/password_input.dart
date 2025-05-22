@@ -19,14 +19,13 @@ class _PasswordInputState extends ConsumerState<PasswordInput> {
   @override
   Widget build(BuildContext context) {
     String? validatePassword(String? value) {
-      const String pattern =
-          r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\W]{9,}$';
+      const String pattern = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$';
       final regex = RegExp(pattern);
 
       if (value == null || value.isEmpty) {
         return 'Password is required';
       } else if (!regex.hasMatch(value)) {
-        return 'Min 9 chars, 1 letter, 1 number, 1 special char';
+        return 'Min 9 chars, 1 letter, 1 number';
       }
       return null;
     }
@@ -43,13 +42,11 @@ class _PasswordInputState extends ConsumerState<PasswordInput> {
       final password = _passwordController.text;
 
       try {
-        // Use the AuthService2 to handle user registration
         final userCredential = await AuthService2().register(email, password);
         final uid = userCredential.user!.uid;
 
         final batch = FirebaseFirestore.instance.batch();
 
-        // Create a user document in the 'users' collection
         final userDoc = FirebaseFirestore.instance.collection('users').doc(uid);
         batch.set(userDoc, {
           'id': uid,
@@ -58,7 +55,6 @@ class _PasswordInputState extends ConsumerState<PasswordInput> {
           'createdAt': FieldValue.serverTimestamp(),
         });
 
-        // Create a volunteer or organizer document in the respective collection
         if (isVolunteer) {
           final newVolunteer = volunteerSignUp.copyWith(id: uid);
           final volunteerDoc =
@@ -71,10 +67,8 @@ class _PasswordInputState extends ConsumerState<PasswordInput> {
           batch.set(organizerDoc, newOrganizer.toMap());
         }
 
-        // Commit the batch write
         await batch.commit();
 
-        // Load user data into the appropriate provider
         if (isVolunteer) {
           ref.read(volunteerProvider.notifier).loadVolunteer(uid);
         } else {
@@ -133,7 +127,7 @@ class _PasswordInputState extends ConsumerState<PasswordInput> {
                 height: 20,
               ),
               const Text(
-                'Your password must have at least: \n 8 characters \n 1 letter \n 1 number \n 1 special character',
+                'Your password must have at least: \n 8 characters \n 1 letter \n 1 number',
                 style: TextStyle(
                   fontSize: 20,
                 ),

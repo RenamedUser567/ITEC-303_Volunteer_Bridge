@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:volunteer_bridge/riverpod/organizer_provider.dart';
 
-class CompanyDescription extends StatefulWidget {
+class CompanyDescription extends ConsumerStatefulWidget {
   const CompanyDescription({super.key});
 
   @override
-  State<CompanyDescription> createState() => _CompanyDescriptionState();
+  ConsumerState<CompanyDescription> createState() => _CompanyDescriptionState();
 }
 
-class _CompanyDescriptionState extends State<CompanyDescription> {
-  final TextEditingController _whoWeAreController = TextEditingController(
-      text:
-          "At Hearts United, we believe that compassion is a powerful force for change. Founded in 2018, our organization is built on the simple yet profound idea that communities thrive when people come together for a common purpose.");
-  final TextEditingController _missionController = TextEditingController(
-      text:
-          "To unite hearts through community-driven volunteer events that uplift lives, promote kindness, and foster social responsibility.");
-  final TextEditingController _joinUsController = TextEditingController(
-      text:
-          "Whether you're an individual looking to make a difference, or an organization wanting to collaborate, Hearts United welcomes you. Together, we can build a stronger, more compassionate community—one volunteer event at a time.");
+class _CompanyDescriptionState extends ConsumerState<CompanyDescription> {
+  final TextEditingController _companyDescription = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final orgData = ref.read(organizerProvider);
+      if (orgData != null) {
+        _companyDescription.text = orgData.companyDescription;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,44 +90,16 @@ class _CompanyDescriptionState extends State<CompanyDescription> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Who We Are",
+                        "Company Description: ",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
                       TextField(
-                        controller: _whoWeAreController,
+                        controller: _companyDescription,
                         maxLines: null,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           hintText: "Enter details about who you are...",
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        "Our Mission",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 10),
-                      TextField(
-                        controller: _missionController,
-                        maxLines: null,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: "Enter your mission...",
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        "Join Us",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 10),
-                      TextField(
-                        controller: _joinUsController,
-                        maxLines: null,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: "Enter details about how to join...",
                         ),
                       ),
                     ],
@@ -131,11 +109,20 @@ class _CompanyDescriptionState extends State<CompanyDescription> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // Handle the update logic here
-                print("Who We Are: ${_whoWeAreController.text}");
-                print("Our Mission: ${_missionController.text}");
-                print("Join Us: ${_joinUsController.text}");
+              onPressed: () async {
+                final notifier = ref.read(organizerProvider.notifier);
+                final currentOrg = ref.read(organizerProvider);
+
+                if (currentOrg == null) return;
+
+                final updatedOrg = currentOrg.copyWith(
+                    companyDescription: _companyDescription.text.trim());
+
+                await notifier.updateOrganizer(updatedOrg);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Profile updated successfully')),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromRGBO(155, 93, 229, 1),

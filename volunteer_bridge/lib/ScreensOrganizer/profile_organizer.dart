@@ -1,12 +1,28 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:volunteer_bridge/ScreensOrganizer/profile_organizer2.dart';
 import 'package:volunteer_bridge/Services/auth.dart';
+import 'package:volunteer_bridge/riverpod/organizer_provider.dart';
 
-class ProfilePageOrg extends StatelessWidget {
+class ProfilePageOrg extends ConsumerStatefulWidget {
   const ProfilePageOrg({super.key});
 
   @override
+  ConsumerState<ProfilePageOrg> createState() => _ProfilePageOrgState();
+}
+
+class _ProfilePageOrgState extends ConsumerState<ProfilePageOrg> {
+  @override
   Widget build(BuildContext context) {
+    final orgData = ref.watch(organizerProvider);
+
+    if (orgData == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final eventCount = EventService().countOrganizerEvents(orgData.id);
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -20,13 +36,24 @@ class ProfilePageOrg extends StatelessWidget {
               color: const Color.fromRGBO(238, 230, 249, 1),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              child: const ListTile(
+              child: ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: AssetImage('assets/mercedes-benz.jpg'),
+                  backgroundImage: buildProfileImage(orgData.profileUrl),
                 ),
-                title: Text('The Jack of All Trades',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('Total Volunteering Events Hosted: \n15 events'),
+                title: Text(orgData.orgName,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: FutureBuilder<int>(
+                    future: eventCount,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Text('Loading event count...');
+                      } else if (snapshot.hasError) {
+                        return const Text('Error loading events');
+                      } else {
+                        return Text(
+                            'Total Volunteering Events Hosted: ${snapshot.data}');
+                      }
+                    }),
               ),
             ),
             const SizedBox(height: 20),
@@ -86,5 +113,15 @@ class ProfilePageOrg extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+ImageProvider buildProfileImage(String profileUrl) {
+  if (profileUrl.startsWith('http')) {
+    return NetworkImage(profileUrl);
+  } else if (profileUrl.startsWith('/')) {
+    return FileImage(File(profileUrl));
+  } else {
+    return AssetImage(profileUrl);
   }
 }

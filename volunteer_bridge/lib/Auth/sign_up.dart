@@ -300,7 +300,11 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         child: Text(value),
                       );
                     }).toList(),
-                    onChanged: (String? newValue) {},
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        volunteerSignUp.updateGender(newValue);
+                      }
+                    },
                   ),
                 ),
 
@@ -326,15 +330,15 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       fillColor: const Color.fromARGB(255, 239, 236, 239),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none, // Remove default border
+                        borderSide: BorderSide.none,
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none, // Remove enabled border
+                        borderSide: BorderSide.none,
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none, // Remove focused border
+                        borderSide: BorderSide.none,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
@@ -347,6 +351,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         return 'Enter a valid email address';
                       }
                       return null;
+                    },
+                    onChanged: (value) {
+                      volunteerSignUp.updateEmail(value);
                     },
                   ),
                 ),
@@ -372,20 +379,20 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       fillColor: const Color.fromARGB(255, 239, 236, 239),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none, // Remove default border
+                        borderSide: BorderSide.none,
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none, // Remove enabled border
+                        borderSide: BorderSide.none,
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none, // Remove focused border
+                        borderSide: BorderSide.none,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
                     ),
-                    //onChanged: (value) => volunteerSignUp.updateEmail(value),
+                    onChanged: (value) => volunteerSignUp.updateAddress(value),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please Enter Address';

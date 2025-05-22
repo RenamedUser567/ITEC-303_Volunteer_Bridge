@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-void main() {
-  runApp(const VolunteerBridgeApp());
-}
-
 class VolunteerBridgeApp extends StatelessWidget {
   const VolunteerBridgeApp({super.key});
 

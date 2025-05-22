@@ -1,4 +1,5 @@
 //import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 /*
@@ -92,5 +93,61 @@ class AuthService2 {
   /// Sign out current user
   Future<void> signOut() async {
     await _auth.signOut();
+  }
+}
+
+class EventService {
+  Future<void> joinEvent({
+    required String eventId,
+    required String userId,
+  }) async {
+    final firestore = FirebaseFirestore.instance;
+
+    final eventRef = firestore.collection('events').doc(eventId);
+    final userRef = firestore.collection('volunteers').doc(userId);
+
+    final batch = firestore.batch();
+
+    batch.update(eventRef, {
+      'joinedVolunteers': FieldValue.arrayUnion([userId]),
+    });
+
+    batch.update(userRef, {
+      'joinedEvents': FieldValue.arrayUnion([eventId]),
+    });
+
+    await batch.commit();
+  }
+
+  Future<void> leaveEvent({
+    required String eventId,
+    required String userId,
+  }) async {
+    final firestore = FirebaseFirestore.instance;
+
+    final eventRef = firestore.collection('events').doc(eventId);
+    final userRef = firestore.collection('volunteers').doc(userId);
+
+    final batch = firestore.batch();
+
+    batch.update(eventRef, {
+      'joinedVolunteers': FieldValue.arrayRemove([userId]),
+    });
+
+    batch.update(userRef, {
+      'joinedEvents': FieldValue.arrayRemove([eventId]),
+    });
+
+    await batch.commit();
+  }
+
+  Future<int> countOrganizerEvents(String organizerId) async {
+    final aggregateQuerySnapshot = await FirebaseFirestore.instance
+        .collection('events')
+        .where('organizerId', isEqualTo: organizerId)
+        .count()
+        .get();
+
+    return aggregateQuerySnapshot.count ?? 0;
   }
 }
